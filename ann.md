@@ -213,7 +213,7 @@ n_test = nrow(X_test)
 
 # ann parameter
 epsilon = 0.001 # learning rate
-reg_lambda <- 0.00 # regularization term
+reg_lambda = 0.00 # regularization term
 n_hlayer = 10 # hidden layer
 n_input_dim = ncol(X_train)
 n_passes = 1000
