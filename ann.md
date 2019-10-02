@@ -3,7 +3,7 @@ Populations
 ================
 Bárbara Benvenuto, Paula Coelho
 
-This is an ANN classification algorithm. First of all we implement the
+This is an ANN classification algorithm written in R. First of all we implement the
 functions we use to compose the network.
 
 Activation functions convert an input signal of a node to an output
