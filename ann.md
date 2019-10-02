@@ -207,8 +207,8 @@ Y_validation = samples$Y_validation
 n_validation = nrow(X_validation)
 
 # test sample
-X_test <- samples$X_test 
-Y_test <- samples$Y_test
+X_test = samples$X_test 
+Y_test = samples$Y_test
 n_test = nrow(X_test)
 
 # ann parameter
