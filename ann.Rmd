@@ -1,9 +1,8 @@
 ---
-title: "Artificial Neural Network - Classification of Stars and Simple Stellar"
+title: "Artificial Neural Network - Classification of Stars and Simple Stellar Populations"
 author: Bárbara Benvenuto, Paula Coelho
 output: html_notebook
 ---
-
 
 This is an ANN classification algorithm written in R. First of all we implement the
 functions we use to compose the network.
@@ -27,11 +26,27 @@ Our data is stored in file `anndataset_n.txt`.
 
 ```{r}
 datafile    <- "anndataset_n.txt" 
-datasample  <- read_table2(datafile, col_names = c("filename", "F395-R","F410-R","F430-R","F515-R", 	"F660-R", "F861-R", "g-r", "i-r", "r-r", "u-r", "x-r"))
+datasample  <- read_table2(datafile, 
+                           col_names = c("filename", "F378-r", "F395-R","F410-R","F430-R","F515-R", 	"F660-R", "F861-R", "g-r", "i-r", "r-r", "u-r", "z-r"), 
+                           skip = 1) %>%
+               mutate(class = ifelse(str_sub(filename, 2, 2) == "t", "star", "ssp"))
+```
+
+Let's take a look at the data:
+
+```{r}
+glimpse(datasample)
+
+datasample %>%
+   ggplot(aes(x = `g-r`, fill = class)) +
+   geom_density(alpha = 0.5)
+
 ```
 
 
-# The network
+
+
+# The ANN, in its first implementation
 
 ```{r}
 # sigmoid activation function: f(x) = 1/(1+exp(-x))
