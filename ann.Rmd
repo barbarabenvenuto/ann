@@ -4,49 +4,16 @@ author: Bárbara Benvenuto, Paula Coelho
 output: html_notebook
 ---
 
+We can also use latex here, ex. $x^2+y\sim z$. 
+
+# The first ANN implementation
+
 This is an ANN classification algorithm written in R. First of all we implement the
 functions we use to compose the network.
 
 Activation functions convert an input signal of a node to an output
 signal that can be used as input in the next layer. Here we use the
 Sigmoid and Softmax functions.
-
-We can also use latex here, ex. $x^2+y\sim z$. 
-
-```{r message=FALSE, warning=FALSE}
-# Loading packages
-
-require(tidyverse)
-
-```
-
-# Data
-
-Our data is stored in file `anndataset_n.txt`. 
-
-```{r}
-datafile    <- "anndataset_n.txt" 
-datasample  <- read_table2(datafile, 
-                           col_names = c("filename", "F378-r", "F395-R","F410-R","F430-R","F515-R", 	"F660-R", "F861-R", "g-r", "i-r", "r-r", "u-r", "z-r"), 
-                           skip = 1) %>%
-               mutate(class = ifelse(str_sub(filename, 2, 2) == "t", "star", "ssp"))
-```
-
-Let's take a look at the data:
-
-```{r}
-glimpse(datasample)
-
-datasample %>%
-   ggplot(aes(x = `g-r`, fill = class)) +
-   geom_density(alpha = 0.5)
-
-```
-
-
-
-
-# The ANN, in its first implementation
 
 ```{r}
 # sigmoid activation function: f(x) = 1/(1+exp(-x))
@@ -60,6 +27,8 @@ softmax = function(A) {return(exp(A) / rowSums(exp(A)))}
 
 The next function loads the dataset and splits it into the three samples
 we need: training (60%), validation (20%) and test (20%).
+
+<span style="color:magenta">Babi, na função abaixo é melhor passar os limites dos 3 sub-samples como parâmetros para a função, ao invés de fazer hard-coded dentro da função.</span>
 
 ```{r}
 # in 4363: 2617,873,873   1:2617 2618:3490 3491:4363
@@ -97,6 +66,8 @@ load_dataset = function() {
 
 The dataset here is composed by 12 features of SSP’s (from line 1 to
 636) and stars (the remain).
+
+<span style="color:magenta">Efetivamente temos apenas 11 features, pois a banda r não conta.</span>
 
 Given the trained model, this routine predicts the classification of
 elements, based on the array of probabilities, which has the
@@ -277,30 +248,66 @@ ann_model = list("X_train" = X_train,
 model = build_train_model(ann_model)  # building and training ANN model
 ```
 
-    ## [1] "Score after iteration 50: 0.877434"
-    ## [1] "Score after iteration 100: 0.879725"
-    ## [1] "Score after iteration 150: 0.890034"
-    ## [1] "Score after iteration 200: 0.903780"
-    ## [1] "Score after iteration 250: 0.906071"
-    ## [1] "Score after iteration 300: 0.916380"
-    ## [1] "Score after iteration 350: 0.919817"
-    ## [1] "Score after iteration 400: 0.935853"
-    ## [1] "Score after iteration 450: 0.996564"
-    ## [1] "Score after iteration 500: 0.877434"
-    ## [1] "Score after iteration 550: 0.997709"
-    ## [1] "Score after iteration 600: 0.998855"
-    ## [1] "Score after iteration 650: 0.998855"
-    ## [1] "Score after iteration 700: 0.998855"
-    ## [1] "Score after iteration 750: 0.998855"
-    ## [1] "Score after iteration 800: 0.998855"
-    ## [1] "Score after iteration 850: 0.998855"
-    ## [1] "Score after iteration 900: 0.998855"
-    ## [1] "Score after iteration 950: 1.000000"
-    ## [1] "Score after iteration 1000: 1.000000"
 
 ```{r}
 score_final = score(predict(model, X_test), Y_test)   
 print(sprintf("Final Score: %f", score_final))
 ```
 
-    ## [1] "Final Score: 1.000000"
+# Taking a look at our data
+
+
+```{r message=FALSE, warning=FALSE}
+# Loading packages
+
+require(tidyverse)
+
+```
+
+Our data is stored in file `anndataset_n.txt`. 
+
+```{r}
+datafile    <- "anndataset_n.txt" 
+datasample  <- read_table2(datafile, 
+                           col_names = c("filename", "F378-r", "F395-R","F410-R","F430-R","F515-R", 	"F660-R", "F861-R", "g-r", "i-r", "r-r", "u-r", "z-r"), 
+                           skip = 1) %>%
+               mutate(class = ifelse(str_sub(filename, 2, 2) == "t", "star", "ssp"))
+```
+
+Let's take a look at the data:
+
+```{r}
+glimpse(datasample)
+
+datasample %>%
+   ggplot(aes(x = `g-r`, fill = class)) +
+   geom_density(alpha = 0.5)
+
+datasample %>%
+   ggplot(aes(x = `g-r`, y = `u-r`)) +
+   geom_point(aes(color = class), alpha = 0.5)
+
+datasample %>%
+   ggplot(aes(x = `g-r`, y = `i-r`)) +
+   geom_point(aes(color = class), alpha = 0.5)
+
+```
+
+Danielle reports that the GCFinder pipeline breaks (i.e. cannot distinguish a star from a globular cluster) in the color range
+
+
+
+# Modificações
+
+## Com relação aos dados
+
+- cores em astronomia vão sempre do azul para o vermelho, por exemplo `r-i`, então algumas das features tem que ser modificadas para refletir essa definição: F660, F861, g, i, r, z
+
+
+## ANN
+
+- remover a banda *r* da lista de features
+- testar implementacoes alternativas, exemplo [aqui](https://www.datacamp.com/community/tutorials/neural-network-models-r)
+
+
+
