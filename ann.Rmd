@@ -1,7 +1,10 @@
 ---
 title: "Artificial Neural Network - Classification of Stars and Simple Stellar Populations"
 author: Bárbara Benvenuto, Paula Coelho
-output: html_notebook
+output: 
+  html_notebook: 
+    toc: true
+
 ---
 
 We can also use latex here, ex. $x^2+y\sim z$. 
@@ -254,6 +257,10 @@ score_final = score(predict(model, X_test), Y_test)
 print(sprintf("Final Score: %f", score_final))
 ```
 
+# Motivation for this work
+
+
+
 # Taking a look at our data
 
 
@@ -301,11 +308,19 @@ Danielle reports that the GCFinder pipeline breaks (i.e. cannot distinguish a st
 
 ## Com relação aos dados
 
-- cores em astronomia vão sempre do azul para o vermelho, por exemplo `r-i`, então algumas das features tem que ser modificadas para refletir essa definição: F660, F861, g, i, r, z
+- remontar o arquivo de dados para 
+  - ordem dos filtros
+  - labels (ou separar em dois arquivos)
+- cores em astronomia vão sempre do azul para o vermelho, por exemplo `r-i`, então algumas das features tem que ser modificadas para refletir essa definição: F660, F861, i, z
 
+# Notebook
+
+- escrever um resumo para motivacao, com dados da dani
 
 ## ANN
 
+- a amostra inicial (treinamento + validacao + teste) tera 10% de SSPs e 90% de estrelas
+- qual deve ser o tamanho da amostra ideal ???
 - remover a banda *r* da lista de features
 - testar implementacoes alternativas, exemplo [aqui](https://www.datacamp.com/community/tutorials/neural-network-models-r)
 
