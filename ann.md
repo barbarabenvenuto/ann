@@ -3,6 +3,8 @@ Populations
 ================
 Bárbara Benvenuto, Paula Coelho
 
+Ah a gente precisa documentar os dados. 
+
 This is an ANN classification algorithm written in R. First of all we implement the
 functions we use to compose the network.
 
