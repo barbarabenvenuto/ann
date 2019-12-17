@@ -7,8 +7,6 @@ output:
 
 ---
 
-We can also use latex here, ex. $x^2+y\sim z$. 
-
 # The first ANN implementation
 
 This is an ANN classification algorithm written in R. First of all we implement the
@@ -31,14 +29,11 @@ softmax = function(A) {return(exp(A) / rowSums(exp(A)))}
 The next function loads the dataset and splits it into the three samples
 we need: training (60%), validation (20%) and test (20%).
 
-<span style="color:magenta">Babi, na função abaixo é melhor passar os limites dos 3 sub-samples como parâmetros para a função, ao invés de fazer hard-coded dentro da função.</span>
-
 ```{r}
-# in 4363: 2617,873,873   1:2617 2618:3490 3491:4363
-load_dataset = function() {
+load_dataset = function(vals, tests) {
   
-#  dpath = "~/Downloads/anndataset_n.txt"
-  dpath = "anndataset_n.txt"
+  #  dpath = "~/Downloads/anndataset_n.txt"
+  dpath = "~/ann/anndataset_n.txt"
   dataset = read.delim(dpath)
   colnames(dataset) = c('F378-R','F395-R','F410-R','F430-R','F515-R','F660-R',
                         'F861-R','G-R','I-R','R-R','U-R','Z-R')
@@ -50,27 +45,28 @@ load_dataset = function() {
   for (i in 1:length(Y)) {Y[i] = ifelse(substr(Y[i],1,1) == "t", 1, 2)}  # 1 star, 2 ssp
   Y = as.integer(Y)
   
+  vals = as.integer(vals*dim(dataset)[1])
+  tests = as.integer(tests*dim(dataset)[1])
+  
   # splitting
-  X_train = X[1:2617,]
-  Y_train = Y[1:2617]
-  X_validation = X[2618:3490,]
-  Y_validation = Y[2618:3490]
-  X_test = X[3491:4363,]
-  Y_test = Y[3491:4363]
+  X_validation = X[1:vals,]
+  Y_validation = Y[1:vals]
+  X_test = X[vals+1:vals+tests,]
+  Y_test = Y[vals+1:vals+tests]
+  X_train = X[(vals+tests+1):dim(dataset)[1],]
+  Y_train = Y[(vals+tests+1):dim(dataset)[1]]
   
   samples = list("X_train" = X_train, 
-                  "Y_train" = Y_train, 
-                  "X_validation" = X_validation, 
-                  "Y_validation" = Y_validation, 
-                  "X_test" = X_test, 
-                  "Y_test" = Y_test)
+                 "Y_train" = Y_train, 
+                 "X_validation" = X_validation, 
+                 "Y_validation" = Y_validation, 
+                 "X_test" = X_test, 
+                 "Y_test" = Y_test)
   return(samples) }
 ```
 
-The dataset here is composed by 12 features of SSP’s (from line 1 to
+The dataset here is composed by 11 features of SSP’s (from line 1 to
 636) and stars (the remain).
-
-<span style="color:magenta">Efetivamente temos apenas 11 features, pois a banda r não conta.</span>
 
 Given the trained model, this routine predicts the classification of
 elements, based on the array of probabilities, which has the
@@ -207,7 +203,9 @@ Now we run the network. In the end, we have the final score, that shows
 the network performance on a totally unknown dataset, the test sample.
 
 ```{r}
-samples = load_dataset()  # loading dataset
+vals = .2  # validation split
+tests = .2  # test split
+samples = load_dataset(vals,tests)  # loading dataset
 
 # training sample
 X_train = samples$X_train
