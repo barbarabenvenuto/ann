@@ -32,18 +32,16 @@ we need: training (60%), validation (20%) and test (20%).
 ```{r}
 load_dataset = function(vals, tests) {
   
-  #  dpath = "~/Downloads/anndataset_n.txt"
-  dpath = "~/ann/anndataset_n.txt"
-  dataset = read.delim(dpath)
-  colnames(dataset) = c('F378-R','F395-R','F410-R','F430-R','F515-R','F660-R',
-                        'F861-R','G-R','I-R','R-R','U-R','Z-R')
+  dpath = "~/ann/anndataset_n_l.txt"
+  dataset = read.csv(dpath, sep="")
+  colnames(dataset) = c('label','u-r','F378-r','F395-r','F410-r','F430-r',
+                        'g-r','F515-r','r-F660','r-i','r-F861','r-z')
   
   dataset = dataset[sample(nrow(dataset)),]  # sorting randomly
   
   X = matrix(unlist(dataset), ncol = 12)
-  Y = row.names(dataset)
-  for (i in 1:length(Y)) {Y[i] = ifelse(substr(Y[i],1,1) == "t", 1, 2)}  # 1 star, 2 ssp
-  Y = as.integer(Y)
+  X = X[,2:12]
+  Y = dataset$label
   
   vals = as.integer(vals*dim(dataset)[1])
   tests = as.integer(tests*dim(dataset)[1])
@@ -66,7 +64,8 @@ load_dataset = function(vals, tests) {
 ```
 
 The dataset here is composed by 11 features of SSP’s (from line 1 to
-636) and stars (the remain).
+636) and stars (the remain). It also has a column of labels, which indicates 
+the class, 1 for SSP and 2 for star.
 
 Given the trained model, this routine predicts the classification of
 elements, based on the array of probabilities, which has the
@@ -304,14 +303,7 @@ Danielle reports that the GCFinder pipeline breaks (i.e. cannot distinguish a st
 
 # Modificações
 
-## Com relação aos dados
-
-- remontar o arquivo de dados para 
-  - ordem dos filtros
-  - labels (ou separar em dois arquivos)
-- cores em astronomia vão sempre do azul para o vermelho, por exemplo `r-i`, então algumas das features tem que ser modificadas para refletir essa definição: F660, F861, i, z
-
-# Notebook
+## Notebook
 
 - escrever um resumo para motivacao, com dados da dani
 
