@@ -37,6 +37,9 @@ load_dataset = function(vals, tests) {
   colnames(dataset) = c('label','u-r','F378-r','F395-r','F410-r','F430-r',
                         'g-r','F515-r','r-F660','r-i','r-F861','r-z')
   
+  # the initial sample must have 10% of SSPs and 90% of stars
+  ssp = dataset[sample(nrow(dataset[1:636,]), size = as.integer(3727/9)),]  # 10%
+  dataset = rbind(ssp,dataset[637:dim(dataset)[1],])
   dataset = dataset[sample(nrow(dataset)),]  # sorting randomly
   
   X = matrix(unlist(dataset), ncol = 12)
@@ -309,9 +312,7 @@ Danielle reports that the GCFinder pipeline breaks (i.e. cannot distinguish a st
 
 ## ANN
 
-- a amostra inicial (treinamento + validacao + teste) tera 10% de SSPs e 90% de estrelas
 - qual deve ser o tamanho da amostra ideal ???
-- remover a banda *r* da lista de features
 - testar implementacoes alternativas, exemplo [aqui](https://www.datacamp.com/community/tutorials/neural-network-models-r)
 
 
