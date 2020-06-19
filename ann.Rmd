@@ -9,6 +9,11 @@ output:
 
 # The first ANN implementation
 
+An ANN structure is constituted by layers of nodes, so that all nodes in the $i$-th layer connect with all nodes in the $(i+1)$-th layer, $i \in \left\{1,...,N-1\right\}$ ($N$ is the number of layers). Each node carries a number, which can be an input sign (first layer case) or a probability (in the others). Below is shown a scheme of our ANN.
+
+![](ann.png){width=80%}
+
+
 This is an ANN classification algorithm written in R. First of all we implement the
 functions we use to compose the network.
 
@@ -28,6 +33,7 @@ softmax = function(A) {return(exp(A) / rowSums(exp(A)))}
 
 The next function loads the dataset and splits it into the three samples
 we need: training (60%), validation (20%) and test (20%).
+
 
 ```{r}
 load_dataset = function(vals, tests) {
@@ -77,7 +83,7 @@ classification taking the higher probability.
 
 ```{r}
 predict = function(model, X) {
-  fp = foward_propagation(model, X)
+  fp = forward_propagation(model, X)
   probs = fp$probs
   colnames(probs) = c(1,2)
   r = as.integer(colnames(probs)[apply(probs,1,which.max)])
@@ -87,6 +93,7 @@ predict = function(model, X) {
 This routine starts the Ws (weight matrices) and bias arrays and train
 the nn using the training sample and checking its performance on
 validation dataset.
+
 
 ```{r}
 build_train_model = function(ann_model) {
@@ -103,8 +110,8 @@ build_train_model = function(ann_model) {
   # loop over the n_passes
   for(i in 1:ann_model$n_passes) {
     
-    # foward propagation
-    fp = foward_propagation(model, ann_model$X_train)
+    # forward propagation
+    fp = forward_propagation(model, ann_model$X_train)
     probs = fp$probs
     a2 = fp$a2
     
@@ -117,12 +124,13 @@ build_train_model = function(ann_model) {
   return(model) }
 ```
 
-Let a1 be the array of features. The Foward Propagation function gives
+Let a1 be the array of features. The forward Propagation function gives
 us the output layer signals, which are the classification probabilities.
 
+
 ```{r}
-foward_propagation = function(model, X){
-  # foward propagation
+forward_propagation = function(model, X){
+  # forward propagation
   W1 = model$W1
   b1 = model$b1
   W2 = model$W2
@@ -259,7 +267,7 @@ print(sprintf("Final Score: %f", score_final))
 
 # Motivation for this work
 
-
+Globular clusters (GCs) are important for the understanding of galaxies evolution. The study of such systems can benefit itself of current and future surveys (S-PLUS, J-PLUS, J-PAS), which brazilian comunity has access, which applies innovative photometric systems with broad-band and narrow-band filters. However, the separation of extra-galactic GCs from faint stars in these images is quite challenging. Recently our group developed a pipeline to detect GCs candidates in J-PLUS images (`GCFinder`), but the list of candidates shows a still high fraction of false positives: stars that are listed as GCs candidates by our pipeline. This problem has motivated the present project, in which we study the viability of using supervised machine learning to separate faint stars from extra-galactic GCs, using the multitude of colors available in these surveys. Thus we implemented the presented here artificial neural network trained with stars and GCs simulated data. 
 
 # Taking a look at our data
 
@@ -271,15 +279,16 @@ require(tidyverse)
 
 ```
 
-Our data is stored in file `anndataset_n.txt`. 
+Our data is stored in file `anndataset_n_l.txt`. 
 
 ```{r}
-datafile    <- "anndataset_n.txt" 
-datasample  <- read_table2(datafile, 
-                           col_names = c("filename", "F378-r", "F395-R","F410-R","F430-R","F515-R", 	"F660-R", "F861-R", "g-r", "i-r", "r-r", "u-r", "z-r"), 
-                           skip = 1) %>%
-               mutate(class = ifelse(str_sub(filename, 2, 2) == "t", "star", "ssp"))
+datafile <- "anndataset_n_l.txt" 
+datasample <- read.csv(datafile, sep="")
+colnames(datasample) <- c('class','u-r','F378-r','F395-r','F410-r','F430-r','g-r','F515-r','r-F660','r-i','r-F861','r-z')
+datasample$class = factor(datasample$class)
 ```
+
+
 
 Let's take a look at the data:
 
@@ -295,10 +304,10 @@ datasample %>%
    geom_point(aes(color = class), alpha = 0.5)
 
 datasample %>%
-   ggplot(aes(x = `g-r`, y = `i-r`)) +
+   ggplot(aes(x = `g-r`, y = `r-i`)) +
    geom_point(aes(color = class), alpha = 0.5)
-
 ```
+
 
 Danielle reports that the GCFinder pipeline breaks (i.e. cannot distinguish a star from a globular cluster) in the color range
 
@@ -308,12 +317,9 @@ Danielle reports that the GCFinder pipeline breaks (i.e. cannot distinguish a st
 
 ## Notebook
 
-- escrever um resumo para motivacao, com dados da dani
-
 ## ANN
 
 - qual deve ser o tamanho da amostra ideal ???
-- testar implementacoes alternativas, exemplo [aqui](https://www.datacamp.com/community/tutorials/neural-network-models-r)
 
 
 
